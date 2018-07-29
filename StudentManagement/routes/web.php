@@ -18,3 +18,9 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+Route::group(['middleware' => ['App\Http\Middleware\AdminMiddleware']], function () {
+Route::get('/gerirCadeiras', function() {
+    $cadeiras = DB::table('cadeiras')->get();
+    return view('gerirCadeiras', ['cadeiras' => $cadeiras]);
+});
+});
