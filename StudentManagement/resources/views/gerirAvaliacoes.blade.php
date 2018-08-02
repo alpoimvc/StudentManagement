@@ -48,15 +48,25 @@
     width: 20%;
     float: left;
   }
+
 </style>
 
 <body>
   <div class="container" style="width: 90%; clear:both; display: table; margin: 0 auto;">
     <div class="col-md">
 
-      <h2>Cadeiras</h2>
+      <h2>Avaliações</h2>
 
-      <button style="margin-top: 25px;" id="addCuidador" type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal2">Adicionar Cadeira</button>
+      <select name="cadeira" id="cadeira" class="form-control">
+      <option value="">Escolher Cadeira</option>
+      @foreach($cadeiras as $data)
+      <option value="{{ $data->nome}}">
+      {{ $data->id }}
+      </option>
+      @endforeach
+      </select>
+
+      <button style="margin-top: 25px;" id="addCuidador" type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal2">Adicionar Avaliação</button>
       @if(!empty($cadeiras))
       <table style="margin-top: 25px;" class="table table-hover, header-fixed" id="cadeirasTable">
         <thead>
@@ -69,7 +79,8 @@
         </thead>
         <tbody>
 
-          @foreach($cadeiras as $data)
+          @foreach($avaliacoes as $data)
+          @if($data->idCadeira))
           <tr>
             <th>{{$data->codigo}}</th>
             <th>{{$data->nome}}</th>
@@ -79,6 +90,7 @@
               <button id="deleteCuidador" type="button" class="btn btn-danger" data-id="{{$data->id}}">Apagar</button>
             </th>
           </tr>
+          @endif
           @endforeach
       </table>
 
@@ -119,18 +131,40 @@
     </div>
   </div>
 
-  <script>
-    $(document).ready(function () {
-      $('#myModal').on('show.bs.modal', function (event) {
+@endif
+
+<script>
+
+$(document).ready(function () {
+    $('#myModal').on('show.bs.modal', function (event) {
         var button = $(event.relatedTarget) // Button that triggered the modal
         var modal = $(this);
         modal.find('#id').val(button.data('id'))
         modal.find('#codigo').val(button.data('codigo'))
         modal.find('#nome').val(button.data('nome'))
-      });
     });
 
-    $(document).on('click', '#deleteCadeira', function () {
+    $('select[name="cadeira"]').on('change', function(){
+        var cadeiraId = $(this).val();
+        if(cadeiraId) {
+            $.ajax({
+                url: '/getAvaliacoes/'+cadeiraId,
+                type:"GET",
+                dataType:"json",
+
+                success:function(data) {
+                console.log(data);
+                },
+            });
+        } else {
+            $('select[name="cadeira"]').empty();
+        }
+
+    });
+
+});
+
+$(document).on('click', '#deleteCadeira', function () {
       $.ajax({
         type: 'POST',
         url: '/apagarCadeira/{id}',
@@ -141,11 +175,10 @@
         }
       });
       location.reload(); //refreshes page
-    });
+});
 
-  </script>
+</script>
 
-@endif
 <div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
       <div class="modal-dialog" role="document">
         <div class="modal-content">

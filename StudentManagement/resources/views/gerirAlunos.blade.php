@@ -54,31 +54,31 @@
   <div class="container" style="width: 90%; clear:both; display: table; margin: 0 auto;">
     <div class="col-md">
 
-      <h2>Cadeiras</h2>
+      <h2>Alunos</h2>
 
-      <button style="margin-top: 25px;" id="addCuidador" type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal2">Adicionar Cadeira</button>
-      @if(!empty($cadeiras))
+      @if(!empty($alunos))
       <table style="margin-top: 25px;" class="table table-hover, header-fixed" id="cadeirasTable">
         <thead>
           <tr>
-            <th>Código</th>
             <th>Nome</th>
-            <th>Opções</th>
+            <th>Email</th>
             <th></th>
           </tr>
         </thead>
         <tbody>
 
-          @foreach($cadeiras as $data)
+          @foreach($alunos as $data)
+          @if($data->type == 'aluno')
           <tr>
-            <th>{{$data->codigo}}</th>
-            <th>{{$data->nome}}</th>
+            <th>{{$data->name}}</th>
+            <th>{{$data->email}}</th>
             <th>
               <button style="margin-right: 30px;" type="button" id="open" class="btn btn-info" data-toggle="modal" data-target="#myModal"
-                data-id="{{$data->id}}" data-codigo="{{$data->codigo}}" data-nome="{{$data->nome}}">Editar</button>
+                data-id="{{$data->id}}" data-name="{{$data->name}}" data-email="{{$data->email}}">Editar</button>
               <button id="deleteCuidador" type="button" class="btn btn-danger" data-id="{{$data->id}}">Apagar</button>
             </th>
           </tr>
+          @endif
           @endforeach
       </table>
 
@@ -89,23 +89,24 @@
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h4 class="modal-title" id="myModalLabel">Editar Cadeira</h4>
+            <h4 class="modal-title" id="myModalLabel">Editar Aluno</h4>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
           <div class="modal-body">
-            <form action="{{ url('/editarCadeira') }}" method="POST">
+            <form action="{{ url('/editarAluno') }}" method="POST">
               <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
               <input type="hidden" class="form-control" name="id" id="id">
+ 
               <div class="form-group">
-                <label for="title">Codigo</label>
-                <input type="text" class="form-control" name="codigo" id="codigo">
+                <label for="des">Nome</label>
+                <input type="text" class="form-control" name="name" id="name">
               </div>
 
               <div class="form-group">
-                <label for="des">Nome</label>
-                <input type="text" class="form-control" name="nome" id="nome">
+                <label for="des">Email</label>
+                <input type="text" class="form-control" name="email" id="email">
               </div>
 
               <div class="modal-footer">
@@ -125,15 +126,15 @@
         var button = $(event.relatedTarget) // Button that triggered the modal
         var modal = $(this);
         modal.find('#id').val(button.data('id'))
-        modal.find('#codigo').val(button.data('codigo'))
-        modal.find('#nome').val(button.data('nome'))
+        modal.find('#name').val(button.data('name'))
+        modal.find('#email').val(button.data('email'))
       });
     });
 
-    $(document).on('click', '#deleteCadeira', function () {
+    $(document).on('click', '#deleteAluno', function () {
       $.ajax({
         type: 'POST',
-        url: '/apagarCadeira/{id}',
+        url: '/apagarAluno/{id}',
         //data : { id :  $(this).data("id") }
         data: {
           "_token": "{{ csrf_token() }}",
@@ -146,38 +147,7 @@
   </script>
 
 @endif
-<div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h4 class="modal-title" id="myModalLabel">Adicionar Cadeira</h4>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <form action="{{ url('/inserirCadeira') }}" method="POST">
-              <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
 
-              <div class="form-group">
-                <label for="title">Código</label>
-                <input type="text" name="codigo" class="form-control" id="codigo">
-              </div>
-
-              <div class="form-group">
-                <label for="des">Nome</label>
-                <input type="text" name="nome" class="form-control" id="nome">
-              </div>
-
-              <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-primary">Save changes</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
 </body>
 
 @endsection

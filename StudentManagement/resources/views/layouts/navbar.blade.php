@@ -13,6 +13,9 @@
                      @if( auth()->check() ) 
                      @if(Auth::user()->type == 'admin')
                      <li class="nav-item">
+                     <a class="nav-link" href="/gerirAlunos"><span>Alunos</span></a>
+                     </li>
+                     <li class="nav-item">
                      <a class="nav-link" href="/gerirCadeiras"><span>Cadeiras</span></a>
                      </li>
                      <li class="nav-item">
