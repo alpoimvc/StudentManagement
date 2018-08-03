@@ -60,38 +60,26 @@
       <select name="cadeira" id="cadeira" class="form-control">
       <option value="">Escolher Cadeira</option>
       @foreach($cadeiras as $data)
-      <option value="{{ $data->nome}}">
-      {{ $data->id }}
+      <option value="{{ $data->id}}">
+      {{ $data->nome }}
       </option>
       @endforeach
       </select>
-
+      
       <button style="margin-top: 25px;" id="addCuidador" type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal2">Adicionar Avaliação</button>
       @if(!empty($cadeiras))
       <table style="margin-top: 25px;" class="table table-hover, header-fixed" id="cadeirasTable">
         <thead>
           <tr>
-            <th>Código</th>
+            <th>IDAluno</th>
             <th>Nome</th>
-            <th>Opções</th>
+            <th>Nota</th>
             <th></th>
           </tr>
         </thead>
-        <tbody>
+        <tbody id="tbody">
 
-          @foreach($avaliacoes as $data)
-          @if($data->idCadeira))
-          <tr>
-            <th>{{$data->codigo}}</th>
-            <th>{{$data->nome}}</th>
-            <th>
-              <button style="margin-right: 30px;" type="button" id="open" class="btn btn-info" data-toggle="modal" data-target="#myModal"
-                data-id="{{$data->id}}" data-codigo="{{$data->codigo}}" data-nome="{{$data->nome}}">Editar</button>
-              <button id="deleteCuidador" type="button" class="btn btn-danger" data-id="{{$data->id}}">Apagar</button>
-            </th>
-          </tr>
-          @endif
-          @endforeach
+        <tbody>
       </table>
 
     </div>
@@ -145,21 +133,18 @@ $(document).ready(function () {
     });
 
     $('select[name="cadeira"]').on('change', function(){
-        var cadeiraId = $(this).val();
-        if(cadeiraId) {
-            $.ajax({
-                url: '/getAvaliacoes/'+cadeiraId,
-                type:"GET",
-                dataType:"json",
-
-                success:function(data) {
-                console.log(data);
-                },
-            });
-        } else {
-            $('select[name="cadeira"]').empty();
-        }
-
+      $.getJSON("/getAvaliacoes/"+$(this).val(), function(jsonData){
+        row = '<tr>';
+        $.each(jsonData, function(i,data)
+        {
+          row += '<th>'+data.idAluno+'</th>';
+          row += '<th>'+data.nomeAluno+'</th>';
+          row += '<th>'+data.nota+'</th>';
+          row += '<th><button style="margin-right: 30px;" type="button" id="open" class="btn btn-info" data-toggle="modal" data-target="#myModal" data-id="{{$data->id}}" data-nome="{{$data->nome}}">Editar</button><button id="deleteCuidador" type="button" class="btn btn-danger" data-id="{{$data->id}}">Apagar</button></th>';
+          row += '</tr>';
+        });
+        $("#tbody").html(row);
+      });
     });
 
 });

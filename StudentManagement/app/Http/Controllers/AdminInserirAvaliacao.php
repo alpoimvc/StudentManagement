@@ -26,8 +26,12 @@ class AdminInserirAvaliacao extends Controller
     }
 
     public function getAvaliacoes($id) {
-        $avaliacoes = DB::table("avaliacoes")->where("idCadeira",$id);
+        //$avaliacoes = DB::table("avaliacoes")->select('idAluno','nomeAluno','nota')->where("idCadeira",$id);
+        $avaliacoes = DB::table("avaliacoes")->select('idAluno','nomeAluno','nota')->where('idCadeira', '=', $id)->get();
         return json_encode($avaliacoes);
+        //dd($avaliacoes);
+        //return Response::json( $avaliacoes );
+        //return "ola";
     }
 
 }
