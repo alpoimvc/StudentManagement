@@ -32,13 +32,17 @@ como admin não consegue aceder às routes. Nesses casos é redirecionado para u
 que diz que não tem acesso. Esta lógica está no ficheiro Middleware/AdminMiddleware
 */
 Route::group(['middleware' => ['App\Http\Middleware\AdminMiddleware']], function () {
+
 Route::get('/gerirCadeiras', function() {
     $cadeiras = DB::table('cadeiras')->get();
-    return view('gerirCadeiras', ['cadeiras' => $cadeiras]);
+    $alunos = DB::table('users')->get();
+    $inscricoes = DB::table('inscricoes')->get();
+    return view('gerirCadeiras', ['cadeiras' => $cadeiras, 'alunos' => $alunos, 'inscricoes' => $inscricoes]);
 });
 Route::get('/gerirAlunos', function() {
     $alunos = DB::table('users')->get();
-    return view('gerirAlunos', ['alunos' => $alunos]);
+    $cadeiras = DB::table('cadeiras')->get();
+    return view('gerirAlunos', ['alunos' => $alunos, 'cadeiras' => $cadeiras]);
 });
 Route::get('/gerirAvaliacoes', function() {
     $avaliacoes = DB::table('avaliacoes')->get();
@@ -46,9 +50,15 @@ Route::get('/gerirAvaliacoes', function() {
     return view('gerirAvaliacoes', ['avaliacoes' => $avaliacoes, 'cadeiras' => $cadeiras]);
 });
 
-Route::get('/getAvaliacoes/{id}', 'AdminInserirAvaliacao@getAvaliacoes');
-
-Route::post('/inserirCadeira','AdminInserirCadeira@inserir')->name('inserirCadeira');
+Route::get('/getAvaliacoes/{id}', 'AdminAvaliacoes@getAvaliacoes');
+Route::get('/getInscricoes/{id}', 'AdminCadeiras@getAlunos');
+Route::get('/getCadeirasAluno/{id}', 'AdminCadeiras@getAlunoCadeiras');
 Route::get('/editarCadeira','AdminUpdateCadeira@show');
 Route::post('/editarCadeira','AdminUpdateCadeira@edit');
+
+Route::post('/inserirInscricao', 'AdminCadeiras@inscreverAluno');
+Route::post('/inserirAvaliacao', 'AdminAvaliacoes@getAvaliacoes');
+Route::post('/inserirCadeira','AdminCadeiras@inserir');
+Route::get('/inserirAluno/{id}', 'AdminAvaliacoes@getAvaliacoes');
+
 });

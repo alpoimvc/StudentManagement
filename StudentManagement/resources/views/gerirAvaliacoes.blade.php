@@ -58,7 +58,7 @@
       <h2>Avaliações</h2>
 
       <select name="cadeira" id="cadeira" class="form-control">
-      <option value="">Escolher Cadeira</option>
+      <option value="0">Escolher Cadeira</option>
       @foreach($cadeiras as $data)
       <option value="{{ $data->id}}">
       {{ $data->nome }}
@@ -140,9 +140,15 @@ $(document).ready(function () {
           row += '<th>'+data.idAluno+'</th>';
           row += '<th>'+data.nomeAluno+'</th>';
           row += '<th>'+data.nota+'</th>';
-          row += '<th><button style="margin-right: 30px;" type="button" id="open" class="btn btn-info" data-toggle="modal" data-target="#myModal" data-id="{{$data->id}}" data-nome="{{$data->nome}}">Editar</button><button id="deleteCuidador" type="button" class="btn btn-danger" data-id="{{$data->id}}">Apagar</button></th>';
+          row += '<th>';
+          row += '<button style="margin-right: 30px;" type="button" id="open" class="btn btn-info" data-toggle="modal" data-target="#myModal" data-id="{{$data->id}}" data-nome="{{$data->nome}}">Editar</button>';
+          row += '<button id="deleteCuidador" type="button" class="btn btn-danger" data-id="{{$data->id}}">Apagar</button>';
+          row += '</th>';
           row += '</tr>';
         });
+        if(!$('select[name="cadeira"]').val()){
+          row = '';
+        }
         $("#tbody").html(row);
       });
     });
@@ -174,7 +180,7 @@ $(document).on('click', '#deleteCadeira', function () {
             </button>
           </div>
           <div class="modal-body">
-            <form action="{{ url('/inserirCadeira') }}" method="POST">
+            <form action="{{ url('/inserirAvaliacao') }}" method="POST">
               <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
 
               <div class="form-group">

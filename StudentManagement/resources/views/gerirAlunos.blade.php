@@ -75,7 +75,9 @@
             <th>
               <button style="margin-right: 30px;" type="button" id="open" class="btn btn-info" data-toggle="modal" data-target="#myModal"
                 data-id="{{$data->id}}" data-name="{{$data->name}}" data-email="{{$data->email}}">Editar</button>
-              <button id="deleteCuidador" type="button" class="btn btn-danger" data-id="{{$data->id}}">Apagar</button>
+                <button style="margin-right: 30px;" type="button" id="verCadeiras" class="btn btn-info" data-toggle="modal" data-target="#modalCadeiras"
+                data-id="{{$data->id}}" data-name="{{$data->name}}">Ver cadeiras</button>
+              <button style="margin-right: 30px;" id="deleteCuidador" type="button" class="btn btn-danger" data-id="{{$data->id}}">Apagar</button>
             </th>
           </tr>
           @endif
@@ -118,6 +120,54 @@
         </div>
       </div>
     </div>
+
+    <div class="modal fade" id="modalCadeiras" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title" id="myModalLabel">Inscrever a cadeiras</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form action="{{ url('/inserirInscricao') }}" method="POST">
+              <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
+              <input type="hidden" class="form-control" name="idAluno" id="idAluno">
+              <input type="hidden" class="form-control" name="nameAluno" id="nameAluno">
+
+              <table style="margin-top: 25px;" class="table table-hover, header-fixed" id="cadeirasTable">
+              <thead>
+              <tr>
+              </tr>
+              </thead>
+              <tbody id="tbody">
+
+              </tbody>
+              </table>
+ 
+              <div class="form-group">
+                <label for="des">Inscrever a cadeira:</label>
+                <select name="nameCadeira" id="nameCadeira" class="form-control">
+                <option value="">Escolher cadeira</option>
+                    @foreach($cadeiras as $data)
+                    <option value="{{ $data->nome }}">
+                      {{ $data->nome }}
+                    </option>
+                    @endforeach
+                </select>
+              </div>
+
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="submit" id="submitInscricao" class="btn btn-info" >Save changes</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      </div>
+
   </div>
 
   <script>
@@ -125,11 +175,37 @@
       $('#myModal').on('show.bs.modal', function (event) {
         var button = $(event.relatedTarget) // Button that triggered the modal
         var modal = $(this);
-        modal.find('#id').val(button.data('id'))
-        modal.find('#name').val(button.data('name'))
-        modal.find('#email').val(button.data('email'))
+        modal.find('#id').val(button.data('id'));
+        modal.find('#name').val(button.data('name'));
+        modal.find('#email').val(button.data('email'));
+      });
+
+      $('#modalCadeiras').on('show.bs.modal', function (event) {
+      var button = $(event.relatedTarget);
+      var modal = $(this);
+      var idAluno = button.data('id');
+      var nameAluno = button.data('name');
+      $("#idAluno").val(idAluno);
+      $("#nameAluno").val(nameAluno);
+
+      $.getJSON("/getCadeirasAluno/"+idAluno, function(jsonData){
+        row = '<tr>';
+        $.each(jsonData, function(i,data)
+        {
+          row += '<th>'+data.nomeCadeira+'</th>';
+          row += '<th>';
+          row += '<button id="deleteCuidador" type="button" class="btn btn-danger" data-id="{{$data->id}}">Apagar</button>';
+          row += '</th>';
+          row += '</tr>';
+        });
+        /*if(!$('select[name="cadeira"]').val()){
+          row = '';
+        }*/
+        $("#tbody").html(row);
+
       });
     });
+  });
 
     $(document).on('click', '#deleteAluno', function () {
       $.ajax({
