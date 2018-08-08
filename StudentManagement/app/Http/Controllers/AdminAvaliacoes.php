@@ -20,7 +20,11 @@ class AdminAvaliacoes extends Controller
         $avaliacao->idAluno = $req->input('idAluno');
         $avaliacao->nomeAluno = $req->input('nomeAluno');
         $avaliacao->nota = $req->input('nota');
-        //$avaliacao->save();
+
+        $check = DB::table("avaliacoes")->select('nomeCadeira')->where('nomeCadeira', '=', $avaliacao->nomeCadeira)->where('idAluno', '=', $avaliacao->idAluno)->get();
+        if ($check->count()){
+            return redirect()->to('/gerirAvaliacoes');
+        }
         $avaliacao = DB::insert('insert into avaliacoes (nomeCadeira, idAluno, nomeAluno, nota) values (?, ?, ?, ?)',[$avaliacao->nomeCadeira, $avaliacao->idAluno, $avaliacao->nomeAluno, $avaliacao->nota]);
         return redirect()->to('/gerirAvaliacoes');
     }
