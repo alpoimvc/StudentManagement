@@ -2,6 +2,8 @@
 
 <head>
 
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+
   <!-- <script src="//code.jquery.com/jquery-1.10.2.js"></script> -->
   <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.12.4.min.js"></script>
 
@@ -56,7 +58,7 @@
 
       <h2>Cadeiras</h2>
 
-      <button style="margin-top: 25px;" id="addCuidador" type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal2">Adicionar Cadeira</button>
+      <button style="margin-top: 25px;" id="addCadeira" type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalAdicionar">Adicionar Cadeira</button>
       @if(!empty($cadeiras))
       <table style="margin-top: 25px;" class="table table-hover, header-fixed" id="cadeirasTable">
         <thead>
@@ -74,10 +76,10 @@
             <th>{{$data->id}}</th>
             <th>{{$data->nome}}</th>
             <th>
-              <button style="margin-right: 30px;" type="button" id="open" class="btn btn-info" data-toggle="modal" data-target="#myModal"
+              <button style="margin-right: 30px;" type="button" id="open" class="btn btn-info" data-toggle="modal" data-target="#modalEditar"
                 data-id="{{$data->id}}" data-nome="{{$data->nome}}">Editar</button>
-              <button id="deleteCuidador" type="button" class="btn btn-danger" data-id="{{$data->id}}">Apagar</button>
-              <button style="margin-right: 30px;" type="button" id="verAlunos" data-id="{{$data->id}}" class="btn btn-info" data-toggle="modal" data-target="#modalAlunos">Alunos Inscritos</button>
+              <button id="deleteCadeira" type="button" class="btn btn-danger" data-id="{{$data->id}}">Apagar</button>
+              <button style="margin-right: 30px;" type="button" id="verAlunos" data-nome="{{$data->nome}}" data-id="{{$data->id}}" class="btn btn-info" data-toggle="modal" data-target="#modalAlunos">Alunos Inscritos</button>
             </th>
           </tr>
           @endforeach
@@ -86,7 +88,7 @@
     </div>
 
     <!-- Modal -->
-    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal fade" id="modalEditar" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
@@ -98,14 +100,11 @@
           <div class="modal-body">
             <form action="{{ url('/editarCadeira') }}" method="POST">
               <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
-              <div class="form-group">
-                <label for="title">ID</label>
-                <input type="text" class="form-control" name="id" id="id">
-              </div>
+              <input type="hidden" name="idCadeira" id="idCadeira">
 
               <div class="form-group">
                 <label for="des">Nome</label>
-                <input type="text" class="form-control" name="nome" id="nome">
+                <input type="text" class="form-control" name="nomeCadeira" id="nomeCadeira">
               </div>
 
               <div class="modal-footer">
@@ -153,22 +152,49 @@
         </div>
       </div>
     </div>
+
+    <div class="modal fade" id="modalAdicionar" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form action="{{ url('/inserirCadeira') }}" method="POST">
+              <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
+
+              <div class="form-group">
+                <label for="des">Nome</label>
+                <input type="text" name="nome" class="form-control">
+              </div>
+
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary" data-nome='{{$data->nome}}'>Save changes</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
     
   </div>
 
   <script>
     $(document).ready(function () {
-      $('#myModal').on('show.bs.modal', function (event) {
+      $('#modalEditar').on('show.bs.modal', function (event) {
         var button = $(event.relatedTarget) // Button that triggered the modal
         var modal = $(this);
-        modal.find('#id').val(button.data('id'));
-        modal.find('#nome').val(button.data('nome'));
+        modal.find('#idCadeira').val(button.data('id'));
+        modal.find('#nomeCadeira').val(button.data('nome'));
       });
 
       $('#modalAlunos').on('show.bs.modal', function (event) {
         var button = $(event.relatedTarget) // Button that triggered the modal
         var modal = $(this);
-        $.getJSON("/getInscricoes/"+button.data('id'), function(jsonData){
+        $.getJSON("/getInscricoes/"+button.data('nome'), function(jsonData){
         row = '<tr>';
         $.each(jsonData, function(i,data)
         {
@@ -183,17 +209,21 @@
       });
       });
     });
+
     $(document).on('click', '#deleteCadeira', function () {
       $.ajax({
         type: 'POST',
-        url: '/apagarCadeira/{id}',
+        url: '/removerCadeira/{id}',
         //data : { id :  $(this).data("id") }
         data: {
           "_token": "{{ csrf_token() }}",
-          "id": $(this).data("id")
-        }
+          "id": $(this).data("id"),
+        },
+        success: function(){
+          location.reload(); //refreshes page
+        },
       });
-      location.reload(); //refreshes page
+      
     });
 
   </script>

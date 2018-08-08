@@ -1,7 +1,6 @@
 @extends('layouts.app') @section('content')
 
 <head>
-
   <!-- <script src="//code.jquery.com/jquery-1.10.2.js"></script> -->
   <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.12.4.min.js"></script>
 
@@ -13,7 +12,6 @@
 
   <!-- icheck checkboxes -->
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/iCheck/1.0.2/icheck.min.js"></script>
-
 </head>
 
 <style>
@@ -53,7 +51,6 @@
 <body>
   <div class="container" style="width: 90%; clear:both; display: table; margin: 0 auto;">
     <div class="col-md">
-
       <h2>Alunos</h2>
 
       @if(!empty($alunos))
@@ -73,52 +70,14 @@
             <th>{{$data->name}}</th>
             <th>{{$data->email}}</th>
             <th>
-              <button style="margin-right: 30px;" type="button" id="open" class="btn btn-info" data-toggle="modal" data-target="#myModal"
-                data-id="{{$data->id}}" data-name="{{$data->name}}" data-email="{{$data->email}}">Editar</button>
-                <button style="margin-right: 30px;" type="button" id="verCadeiras" class="btn btn-info" data-toggle="modal" data-target="#modalCadeiras"
+                <button style="margin-right: 30px;" type="button" id="verCadeiras" class="btn btn-primary" data-toggle="modal" data-target="#modalCadeiras"
                 data-id="{{$data->id}}" data-name="{{$data->name}}">Ver cadeiras</button>
-              <button style="margin-right: 30px;" id="deleteCuidador" type="button" class="btn btn-danger" data-id="{{$data->id}}">Apagar</button>
             </th>
           </tr>
           @endif
           @endforeach
       </table>
 
-    </div>
-
-    <!-- Modal -->
-    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h4 class="modal-title" id="myModalLabel">Editar Aluno</h4>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <form action="{{ url('/editarAluno') }}" method="POST">
-              <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
-              <input type="hidden" class="form-control" name="id" id="id">
- 
-              <div class="form-group">
-                <label for="des">Nome</label>
-                <input type="text" class="form-control" name="name" id="name">
-              </div>
-
-              <div class="form-group">
-                <label for="des">Email</label>
-                <input type="text" class="form-control" name="email" id="email">
-              </div>
-
-              <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="submit" id="ajaxSubmit" class="btn btn-info" data-id='{{$data->id}}'>Save changes</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
     </div>
 
     <div class="modal fade" id="modalCadeiras" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
@@ -131,10 +90,10 @@
             </button>
           </div>
           <div class="modal-body">
-            <form action="{{ url('/inserirInscricao') }}" method="POST">
+            <form action="{{ url('/inserirInscricao') }}" method="POST" onsubmit="myFunction()">
               <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
               <input type="hidden" class="form-control" name="idAluno" id="idAluno">
-              <input type="hidden" class="form-control" name="nameAluno" id="nameAluno">
+              <input type="hidden" class="form-control" name="nomeAluno" id="nomeAluno">
 
               <table style="margin-top: 25px;" class="table table-hover, header-fixed" id="cadeirasTable">
               <thead>
@@ -148,7 +107,7 @@
  
               <div class="form-group">
                 <label for="des">Inscrever a cadeira:</label>
-                <select name="nameCadeira" id="nameCadeira" class="form-control">
+                <select name="nomeCadeira" id="nomeCadeira" class="form-control">
                 <option value="">Escolher cadeira</option>
                     @foreach($cadeiras as $data)
                     <option value="{{ $data->nome }}">
@@ -156,6 +115,7 @@
                     </option>
                     @endforeach
                 </select>
+                <h3 id="message"></h4>
               </div>
 
               <div class="modal-footer">
@@ -184,9 +144,9 @@
       var button = $(event.relatedTarget);
       var modal = $(this);
       var idAluno = button.data('id');
-      var nameAluno = button.data('name');
+      var nomeAluno = button.data('name');
       $("#idAluno").val(idAluno);
-      $("#nameAluno").val(nameAluno);
+      $("#nomeAluno").val(nomeAluno);
 
       $.getJSON("/getCadeirasAluno/"+idAluno, function(jsonData){
         row = '<tr>';
@@ -194,7 +154,7 @@
         {
           row += '<th>'+data.nomeCadeira+'</th>';
           row += '<th>';
-          row += '<button id="deleteCuidador" type="button" class="btn btn-danger" data-id="{{$data->id}}">Apagar</button>';
+          row += '<button id="removerInscricao" type="button" class="btn btn-danger" data-id="'+data.idAluno+'" data-nome="'+data.nomeCadeira+'">Apagar</button>';
           row += '</th>';
           row += '</tr>';
         });
@@ -204,17 +164,25 @@
         $("#tbody").html(row);
 
       });
-    });
-  });
 
-    $(document).on('click', '#deleteAluno', function () {
+      });
+
+    });
+
+    $(document).on('click', '#removerInscricao', function () {
       $.ajax({
         type: 'POST',
-        url: '/apagarAluno/{id}',
-        //data : { id :  $(this).data("id") }
+        url: '/removerInscricao/{id}/{nome}',
         data: {
           "_token": "{{ csrf_token() }}",
-          "id": $(this).data("id")
+          "id": $(this).data("id"),
+          "nome": $(this).data("nome"),
+        },
+        success: function(result) { //we got the response
+             alert('Successfully called');
+        },
+        error: function(jqxhr, status, exception) {
+             alert('Exception:', exception);
         }
       });
       location.reload(); //refreshes page

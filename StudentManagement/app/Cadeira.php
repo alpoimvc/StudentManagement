@@ -12,6 +12,6 @@ class Cadeira extends Model
      * @var array
      */
     protected $fillable = [
-        'codigo', 'nome',
+        'id', 'nome',
     ];
 }

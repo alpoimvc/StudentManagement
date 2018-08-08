@@ -53,8 +53,9 @@ Route::get('/gerirAvaliacoes', function() {
 Route::get('/getAvaliacoes/{id}', 'AdminAvaliacoes@getAvaliacoes');
 Route::get('/getInscricoes/{id}', 'AdminCadeiras@getAlunos');
 Route::get('/getCadeirasAluno/{id}', 'AdminCadeiras@getAlunoCadeiras');
-Route::get('/editarCadeira','AdminUpdateCadeira@show');
-Route::post('/editarCadeira','AdminUpdateCadeira@edit');
+Route::post('/editarCadeira','AdminCadeiras@editarCadeira');
+Route::post('/removerCadeira/{id}','AdminCadeiras@removerCadeira');
+Route::post('/removerInscricao/{id}/{nome}','AdminCadeiras@removerInscricao');
 
 Route::post('/inserirInscricao', 'AdminCadeiras@inscreverAluno');
 Route::post('/inserirAvaliacao', 'AdminAvaliacoes@getAvaliacoes');
