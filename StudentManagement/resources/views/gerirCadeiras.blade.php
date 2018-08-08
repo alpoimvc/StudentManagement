@@ -59,6 +59,8 @@
       <h2>Cadeiras</h2>
 
       <button style="margin-top: 25px;" id="addCadeira" type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalAdicionar">Adicionar Cadeira</button>
+      
+      <!-- verifica se o array recebido na view está vazio.-->
       @if(!empty($cadeiras))
       <table style="margin-top: 25px;" class="table table-hover, header-fixed" id="cadeirasTable">
         <thead>
@@ -70,7 +72,8 @@
           </tr>
         </thead>
         <tbody>
-
+          
+          <!-- Recebe o array com todas as cadeiras da base de dados -->
           @foreach($cadeiras as $data)
           <tr>
             <th>{{$data->id}}</th>
@@ -87,7 +90,7 @@
 
     </div>
 
-    <!-- Modal -->
+    <!-- Modal  que contém um formulario para editar o nome da cadeira -->
     <div class="modal fade" id="modalEditar" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -116,43 +119,9 @@
         </div>
       </div>
     </div>
-
-    <div class="modal fade" id="modalAlunos" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h4 class="modal-title" id="myModalLabel">Editar Aluno</h4>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div id="modalAlunosInscritos" class="modal-body">
-
-            <form action="{{ url('/editarAluno') }}" method="POST">
-              <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
-
-            <table style="margin-top: 25px;" class="table table-hover, header-fixed" id="cadeirasTable">
-              <thead>
-              <tr>
-                <th>ID</th>
-                <th>Nome</th>
-                <th></th>
-              </tr>
-              </thead>
-              <tbody id="tbody">
-
-              </tbody>
-            </table>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="submit" id="ajaxSubmit" class="btn btn-info" data-id='{{$data->id}}'>Save changes</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-
+    
+    <!-- Modal que contém um formulario para inserir uma nova cadeira
+    Os dados são enviados pela route "/inserirCadeira" -->
     <div class="modal fade" id="modalAdicionar" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -179,11 +148,49 @@
         </div>
       </div>
     </div>
+
+    <!-- Modal que mostra os alunos inscritos -->
+    <div class="modal fade" id="modalAlunos" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title" id="myModalLabel">Alunos inscritos</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+
+              <table style="margin-top: 25px;" class="table table-hover, header-fixed" id="cadeirasTable">
+              <thead>
+              <tr>
+              <th>Número</th>
+              <th>Nome</th>
+              </tr>
+              </thead>
+
+              <tbody id="tbody">
+
+              </tbody>
+              </table>
+ 
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
     
   </div>
 
   <script>
     $(document).ready(function () {
+
+      /*Quando o modal é aberto, os dados passados pelo botão são
+      atribuídos aos elementos com id "idCadeira" e "nomeCadeira".*/
+
       $('#modalEditar').on('show.bs.modal', function (event) {
         var button = $(event.relatedTarget) // Button that triggered the modal
         var modal = $(this);
@@ -191,6 +198,9 @@
         modal.find('#nomeCadeira').val(button.data('nome'));
       });
 
+      /*Quando o modal é aberto é feito um pedido ajax que recebe as
+      inscricoes à cadeira. As inscrições são mostradas no modal que aparece ao
+      clicar em "Alunos Inscritos" */
       $('#modalAlunos').on('show.bs.modal', function (event) {
         var button = $(event.relatedTarget) // Button that triggered the modal
         var modal = $(this);
@@ -201,7 +211,6 @@
           row += '<th>'+data.idAluno+'</th>';
           row += '<th>'+data.nomeAluno+'</th>';
           row += '<th>';
-          row += '<button id="deleteCuidador" type="button" class="btn btn-danger" data-id="{{$data->id}}">Remover</button>';
           row += '</th>';
           row += '</tr>';
         });
@@ -210,11 +219,12 @@
       });
     });
 
+    /* Ao clicar no botão de delete é feito um pedido ajax que identifica
+    o id da cadeira a remover */
     $(document).on('click', '#deleteCadeira', function () {
       $.ajax({
         type: 'POST',
         url: '/removerCadeira/{id}',
-        //data : { id :  $(this).data("id") }
         data: {
           "_token": "{{ csrf_token() }}",
           "id": $(this).data("id"),

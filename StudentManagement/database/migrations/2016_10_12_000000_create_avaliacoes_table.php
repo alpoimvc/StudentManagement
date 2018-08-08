@@ -15,7 +15,7 @@ class CreateAvaliacoesTable extends Migration
     {
         Schema::create('avaliacoes', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('cadeira');
+            $table->string('nomeCadeira');
             $table->string('idAluno');
             $table->string('nomeAluno');
             $table->string('nota');

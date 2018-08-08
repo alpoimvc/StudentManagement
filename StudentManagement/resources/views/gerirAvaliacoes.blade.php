@@ -57,16 +57,19 @@
 
       <h2>Avaliações</h2>
 
+      <!-- Primeiro seleciona-se a cadeira e posteriormente são mostradas 
+      as avaliações dessa cadeira através de um pedido ajax -->
       <select name="cadeira" id="cadeira" class="form-control">
       <option value="0">Escolher Cadeira</option>
       @foreach($cadeiras as $data)
-      <option value="{{ $data->id}}">
+      <option value="{{ $data->nome}}">
       {{ $data->nome }}
       </option>
       @endforeach
       </select>
       
       <button style="margin-top: 25px;" id="addCuidador" type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal2">Adicionar Avaliação</button>
+      <!-- verifica se o array recebido na view está vazio.-->
       @if(!empty($cadeiras))
       <table style="margin-top: 25px;" class="table table-hover, header-fixed" id="cadeirasTable">
         <thead>
@@ -81,42 +84,8 @@
 
         <tbody>
       </table>
-
     </div>
 
-    <!-- Modal -->
-    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h4 class="modal-title" id="myModalLabel">Editar Cadeira</h4>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <form action="{{ url('/editarCadeira') }}" method="POST">
-              <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
-              <input type="hidden" class="form-control" name="id" id="id">
-              <div class="form-group">
-                <label for="title">Codigo</label>
-                <input type="text" class="form-control" name="codigo" id="codigo">
-              </div>
-
-              <div class="form-group">
-                <label for="des">Nome</label>
-                <input type="text" class="form-control" name="nome" id="nome">
-              </div>
-
-              <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="submit" id="ajaxSubmit" class="btn btn-info" data-id='{{$data->id}}'>Save changes</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 
 @endif
@@ -124,16 +93,11 @@
 <script>
 
 $(document).ready(function () {
-    $('#myModal').on('show.bs.modal', function (event) {
-        var button = $(event.relatedTarget) // Button that triggered the modal
-        var modal = $(this);
-        modal.find('#id').val(button.data('id'))
-        modal.find('#codigo').val(button.data('codigo'))
-        modal.find('#nome').val(button.data('nome'))
-    });
-
+   /* Ao selecionar uma cadeira faz-se o pedido ajax para
+   receber as avaliações dos alunos a essa cadeira */
     $('select[name="cadeira"]').on('change', function(){
       $.getJSON("/getAvaliacoes/"+$(this).val(), function(jsonData){
+        /* Variável usada para criar a tabela */
         row = '<tr>';
         $.each(jsonData, function(i,data)
         {
@@ -141,8 +105,7 @@ $(document).ready(function () {
           row += '<th>'+data.nomeAluno+'</th>';
           row += '<th>'+data.nota+'</th>';
           row += '<th>';
-          row += '<button style="margin-right: 30px;" type="button" id="open" class="btn btn-info" data-toggle="modal" data-target="#myModal" data-id="{{$data->id}}" data-nome="{{$data->nome}}">Editar</button>';
-          row += '<button id="deleteCuidador" type="button" class="btn btn-danger" data-id="{{$data->id}}">Apagar</button>';
+          row += '<button id="removerAvaliacao" type="button" class="btn btn-danger" data-id="'+data.id+'">Apagar</button>';
           row += '</th>';
           row += '</tr>';
         });
@@ -151,6 +114,53 @@ $(document).ready(function () {
         }
         $("#tbody").html(row);
       });
+    });
+
+    /* Ao selecionar uma cadeira (no modal de inserir avaliaçao)
+    faz-se o pedido ajax para receber os alunos inscritos a essa cadeira */
+    $('select[name="nomeCadeira"]').on('change', function(){
+      $('select[name="nomeAluno"]').empty();
+      $.getJSON("/getInscricoes/"+$(this).val(), function(jsonData){
+
+        /* Variável que vai criar as options para o select */
+        option = '<option value="">Escolher aluno</option>';
+        $.each(jsonData, function(i,data)
+        {
+          option += '<option val="'+data.nomeAluno+'">'+data.nomeAluno+'</option>';
+        });
+        if(!$('select[name="nomeCadeira"]').val()){
+          option = '';
+        } 
+        $('select[name="nomeAluno"]').append(option);
+      });
+    });
+
+    /* Ao selecionar um aluno o seu id é passado para um input
+    que posteriormente vai ser submetido no formulário para identificar
+    o aluno
+    */
+    $('select[name="nomeAluno"]').on('change', function(){
+      $.getJSON("/getIDAluno/"+$(this).val(), function(jsonData){
+        $.each(jsonData, function(i,data)
+        {
+          document.getElementById("inputAluno").value = data.id;
+        });
+      });
+    });
+
+    $(document).on('click', '#removerAvaliacao', function () {
+      $.ajax({
+        type: 'POST',
+        /* É enviado para o controlador o id do aluno e o nome da cadeira a remover. */
+        url: '/removerAvaliacao/{id}',
+        data: {
+          "_token": "{{ csrf_token() }}",
+          "id": $(this).data("id"),
+        },
+        success: function(){
+          location.reload(); //refreshes page
+        },
+      }); 
     });
 
 });
@@ -174,7 +184,7 @@ $(document).on('click', '#deleteCadeira', function () {
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h4 class="modal-title" id="myModalLabel">Adicionar Cadeira</h4>
+            <h4 class="modal-title" id="myModalLabel">Adicionar Avaliação</h4>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
@@ -182,15 +192,33 @@ $(document).on('click', '#deleteCadeira', function () {
           <div class="modal-body">
             <form action="{{ url('/inserirAvaliacao') }}" method="POST">
               <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
+                
+                <div class="form-group">
+                <label for="des">Cadeira:</label>
+                <select name="nomeCadeira" id="nomeCadeira" class="form-control">
+                <option value="">Escolher cadeira</option>
+                    @foreach($cadeiras as $data)
+                    <option value="{{ $data->nome }}">
+                      {{ $data->nome }}
+                    </option>
+                    @endforeach
+                </select>
+                </div>
+
+                <div class="form-group">
+                <label for="des">Aluno:</label>
+                <select name="nomeAluno" id="nomeAluno" class="form-control">
+
+                </select>
+                </div>
+
+                <div id="divAluno" class="form-group">
+                <input type="hidden" class="form-control" id="inputAluno" name="idAluno">
+                </div>
 
               <div class="form-group">
-                <label for="title">Código</label>
-                <input type="text" name="codigo" class="form-control" id="codigo">
-              </div>
-
-              <div class="form-group">
-                <label for="des">Nome</label>
-                <input type="text" name="nome" class="form-control" id="nome">
+                <label for="des">Nota</label>
+                <input type="text" name="nota" class="form-control" id="nota">
               </div>
 
               <div class="modal-footer">
@@ -201,7 +229,11 @@ $(document).on('click', '#deleteCadeira', function () {
           </div>
         </div>
       </div>
-    </div>
+</div>
 </body>
+
+<script>
+
+</script>
 
 @endsection

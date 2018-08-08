@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<!-- Este é o ficheiro principal da aplicação. 
+Carrega-se o javascript e css, e usa-se o include para chamar a navbar. -->
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -22,6 +24,7 @@
 </head>
 <body>
     <div id="app">
+    <!-- Ficheiro que tem a navbar com os links para as outras páginas -->
     @include('layouts.navbar')
         <main class="py-4">
             @yield('content')

@@ -1,6 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
+
+<!-- Esta é a página inicial mostrada ao utilizador quando faz login -->
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">

@@ -33,33 +33,68 @@ que diz que não tem acesso. Esta lógica está no ficheiro Middleware/AdminMidd
 */
 Route::group(['middleware' => ['App\Http\Middleware\AdminMiddleware']], function () {
 
+    /* Neste tipo de routes é feita uma query que recebe um array
+    da base de dados e o envia para a view */
 Route::get('/gerirCadeiras', function() {
     $cadeiras = DB::table('cadeiras')->get();
     $alunos = DB::table('users')->get();
     $inscricoes = DB::table('inscricoes')->get();
     return view('gerirCadeiras', ['cadeiras' => $cadeiras, 'alunos' => $alunos, 'inscricoes' => $inscricoes]);
 });
+
+    /* Neste tipo de routes é feita uma query que recebe um array
+    da base de dados e o envia para a view */
 Route::get('/gerirAlunos', function() {
     $alunos = DB::table('users')->get();
     $cadeiras = DB::table('cadeiras')->get();
     return view('gerirAlunos', ['alunos' => $alunos, 'cadeiras' => $cadeiras]);
 });
+
+    /* Neste tipo de routes é feita uma query que recebe um array
+    da base de dados e o envia para a view */
 Route::get('/gerirAvaliacoes', function() {
     $avaliacoes = DB::table('avaliacoes')->get();
+    $alunos = DB::table('users')->get();
     $cadeiras = DB::table('cadeiras')->get();
-    return view('gerirAvaliacoes', ['avaliacoes' => $avaliacoes, 'cadeiras' => $cadeiras]);
+    return view('gerirAvaliacoes', ['avaliacoes' => $avaliacoes, 'cadeiras' => $cadeiras, 'alunos' => $alunos]);
 });
 
-Route::get('/getAvaliacoes/{id}', 'AdminAvaliacoes@getAvaliacoes');
+    /* Routes normais. São constituidas por um url, uma variável opcional
+    a passar como parametro, o controlador que vai fazer o processamento
+    e a função que deve ser executado */
+Route::get('/getAvaliacoes/{nome}', 'AdminAvaliacoes@getAvaliacoes');
 Route::get('/getInscricoes/{id}', 'AdminCadeiras@getAlunos');
 Route::get('/getCadeirasAluno/{id}', 'AdminCadeiras@getAlunoCadeiras');
+Route::get('/getIDAluno/{nome}', 'AdminAvaliacoes@getIDAluno');
 Route::post('/editarCadeira','AdminCadeiras@editarCadeira');
 Route::post('/removerCadeira/{id}','AdminCadeiras@removerCadeira');
 Route::post('/removerInscricao/{id}/{nome}','AdminCadeiras@removerInscricao');
-
+Route::post('/removerAvaliacao/{id}','AdminAvaliacoes@removerAvaliacao');
 Route::post('/inserirInscricao', 'AdminCadeiras@inscreverAluno');
-Route::post('/inserirAvaliacao', 'AdminAvaliacoes@getAvaliacoes');
+Route::post('/inserirAvaliacao', 'AdminAvaliacoes@inserir');
 Route::post('/inserirCadeira','AdminCadeiras@inserir');
 Route::get('/inserirAluno/{id}', 'AdminAvaliacoes@getAvaliacoes');
 
+});
+
+/*
+Grupo que contém as routes do aluno. Se o utilizador não tiver autenticado
+como aluno não consegue aceder às routes. Nesses casos é redirecionado para uma view
+que diz que não tem acesso. Esta lógica está no ficheiro Middleware/AlunoMiddleware
+*/
+Route::group(['middleware' => ['App\Http\Middleware\AlunoMiddleware']], function () {
+    Route::get('/consultarCadeiras', function() {
+        $inscricoes = DB::table('inscricoes')->get();
+        return view('consultarCadeiras', ['inscricoes' => $inscricoes]);
+    });
+    Route::post('/removerInscricao/{id}/{nome}','AdminCadeiras@removerInscricao');
+
+    Route::get('/consultarAvaliacoes', function() {
+        $avaliacoes = DB::table('avaliacoes')->get();
+        return view('consultarAvaliacoes', ['avaliacoes' => $avaliacoes]);
+    });
+
+    Route::get('/submeterTrabalho', function() {
+        return view('submeterTrabalho');
+    });
 });

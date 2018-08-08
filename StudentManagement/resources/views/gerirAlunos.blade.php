@@ -53,6 +53,7 @@
     <div class="col-md">
       <h2>Alunos</h2>
 
+      <!-- verifica se o array recebido na view está vazio.-->
       @if(!empty($alunos))
       <table style="margin-top: 25px;" class="table table-hover, header-fixed" id="cadeirasTable">
         <thead>
@@ -64,12 +65,15 @@
         </thead>
         <tbody>
 
+          <!-- Recebe o array com todos os utilizadores da base de dados
+          e lista apenas os alunos -->
           @foreach($alunos as $data)
           @if($data->type == 'aluno')
           <tr>
             <th>{{$data->name}}</th>
             <th>{{$data->email}}</th>
             <th>
+                <!-- Botão que abre o modal (popup) para ver as cadeiras -->
                 <button style="margin-right: 30px;" type="button" id="verCadeiras" class="btn btn-primary" data-toggle="modal" data-target="#modalCadeiras"
                 data-id="{{$data->id}}" data-name="{{$data->name}}">Ver cadeiras</button>
             </th>
@@ -80,16 +84,19 @@
 
     </div>
 
+    <!-- Modal para inscrever em cadeiras -->
     <div class="modal fade" id="modalCadeiras" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h4 class="modal-title" id="myModalLabel">Inscrever a cadeiras</h4>
+            <h4 class="modal-title" id="myModalLabel">Cadeiras a que o aluno está inscrito</h4>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
           <div class="modal-body">
+              <!-- Form que irá submeter os dados (idAluno, nomeAluno e nomeCadeira)
+              para o url especificado. Ver nas routes para que controlador o pedido é redirecionado -->
             <form action="{{ url('/inserirInscricao') }}" method="POST" onsubmit="myFunction()">
               <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
               <input type="hidden" class="form-control" name="idAluno" id="idAluno">
@@ -97,8 +104,6 @@
 
               <table style="margin-top: 25px;" class="table table-hover, header-fixed" id="cadeirasTable">
               <thead>
-              <tr>
-              </tr>
               </thead>
               <tbody id="tbody">
 
@@ -107,6 +112,7 @@
  
               <div class="form-group">
                 <label for="des">Inscrever a cadeira:</label>
+                <!-- Select que lista as cadeiras -->
                 <select name="nomeCadeira" id="nomeCadeira" class="form-control">
                 <option value="">Escolher cadeira</option>
                     @foreach($cadeiras as $data)
@@ -115,7 +121,6 @@
                     </option>
                     @endforeach
                 </select>
-                <h3 id="message"></h4>
               </div>
 
               <div class="modal-footer">
@@ -132,14 +137,10 @@
 
   <script>
     $(document).ready(function () {
-      $('#myModal').on('show.bs.modal', function (event) {
-        var button = $(event.relatedTarget) // Button that triggered the modal
-        var modal = $(this);
-        modal.find('#id').val(button.data('id'));
-        modal.find('#name').val(button.data('name'));
-        modal.find('#email').val(button.data('email'));
-      });
 
+     /*Quando o modal é aberto, os dados passados pelo botão são
+     atribuídos às variáveis idAluno e nomeAluno. Por sua vez, estas
+     definem o valor dos inputs no formulário */
       $('#modalCadeiras').on('show.bs.modal', function (event) {
       var button = $(event.relatedTarget);
       var modal = $(this);
@@ -148,44 +149,20 @@
       $("#idAluno").val(idAluno);
       $("#nomeAluno").val(nomeAluno);
 
+        /* Ao abrir o modal é feito um pedido ajax que recebe as
+        cadeiras às quais o aluno está inscrito */
       $.getJSON("/getCadeirasAluno/"+idAluno, function(jsonData){
+        /* Para cada cadeira é criada a variável row que contém a tabela e um botão */
         row = '<tr>';
         $.each(jsonData, function(i,data)
         {
           row += '<th>'+data.nomeCadeira+'</th>';
-          row += '<th>';
-          row += '<button id="removerInscricao" type="button" class="btn btn-danger" data-id="'+data.idAluno+'" data-nome="'+data.nomeCadeira+'">Apagar</button>';
-          row += '</th>';
           row += '</tr>';
         });
-        /*if(!$('select[name="cadeira"]').val()){
-          row = '';
-        }*/
         $("#tbody").html(row);
-
+      });
       });
 
-      });
-
-    });
-
-    $(document).on('click', '#removerInscricao', function () {
-      $.ajax({
-        type: 'POST',
-        url: '/removerInscricao/{id}/{nome}',
-        data: {
-          "_token": "{{ csrf_token() }}",
-          "id": $(this).data("id"),
-          "nome": $(this).data("nome"),
-        },
-        success: function(result) { //we got the response
-             alert('Successfully called');
-        },
-        error: function(jqxhr, status, exception) {
-             alert('Exception:', exception);
-        }
-      });
-      location.reload(); //refreshes page
     });
 
   </script>

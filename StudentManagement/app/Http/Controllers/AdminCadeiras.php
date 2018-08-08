@@ -12,6 +12,9 @@ use Validator;
 class AdminCadeiras extends Controller
 {
 
+    /* Recebe os parametros da view (informaçao do aluno)
+    e faz a query para inserir na base de dados. As outras funçoes sao
+    semelhantes, sendo que algumas retornam um json (tipicamente para os pedidos ajax) */
     public function inserir(Request $req)
     {
         $cadeira = new Cadeira;
@@ -65,8 +68,6 @@ class AdminCadeiras extends Controller
         $nome = Input::get('nome');
 
         DB::delete('delete from inscricoes where nomeCadeira = ? and idAluno = ?',[$nome, $id]);
-        //return json_encode($inscricao);
-        return redirect()->to('/gerirAlunos'); 
     }
     
 

@@ -66,6 +66,10 @@
     </head>
     <body>
         <div class="flex-center position-ref full-height">
+        <!-- Verifica se o utilizador está autenticado.
+        Se não estiver pode fazer login ou registar.
+        As routes referem-se aos links por onde o utilizador navega.
+        Todas as routes estão no ficheiro web.php-->
             @if (Route::has('login'))
                 <div class="top-right links">
                     @auth
@@ -79,9 +83,10 @@
 
             <div class="content">
                 <div class="title m-b-md">
-                    Laravel
+                    Student Management System
                 </div>
 
+                <!-- Links do laravel -->
                 <div class="links">
                     <a href="https://laravel.com/docs">Documentation</a>
                     <a href="https://laracasts.com">Laracasts</a>

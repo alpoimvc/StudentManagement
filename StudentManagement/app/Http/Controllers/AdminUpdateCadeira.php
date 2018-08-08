@@ -18,7 +18,6 @@ class AdminUpdateCadeira extends Controller
      public function show($id) {
         $cadeiras = DB::select('select * from cadeiras where id = ?',[$id]);
         return $cadeiras;
-        //return view('cuidadorUpdate',['users'=>$users]);
      }
      
      public function edit(Request $request) {
@@ -26,7 +25,6 @@ class AdminUpdateCadeira extends Controller
         $cadeira->codigo = $request->codigo;
         $cadeira->nome = $request->nome;
         $cadeira->save();
-
         return redirect()->to('/gerirCadeiras');
      }
 
