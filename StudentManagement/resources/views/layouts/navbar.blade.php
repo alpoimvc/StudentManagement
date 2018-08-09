@@ -26,7 +26,7 @@
                      <a class="nav-link" href="/gerirHorarios"><span>Horários</span></a>
                      </li>
                      <li class="nav-item">
-                     <a class="nav-link" href="/gerirTrabalhos"><span>Trabalhos</span></a>
+                     <a class="nav-link" href="/consultarTrabalhos"><span>Trabalhos</span></a>
                      </li>
                      @endif
                      @if(Auth::user()->type == 'aluno')

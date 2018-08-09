@@ -59,10 +59,17 @@ Route::get('/gerirAvaliacoes', function() {
     return view('gerirAvaliacoes', ['avaliacoes' => $avaliacoes, 'cadeiras' => $cadeiras, 'alunos' => $alunos]);
 });
 
+Route::get('/consultarTrabalhos', function() {
+    $trabalhos = DB::table('trabalhos')->get();
+    $cadeiras = DB::table('cadeiras')->get();
+    return view('consultarTrabalhos', ['trabalhos' => $trabalhos, 'cadeiras' => $cadeiras]);
+});
+
     /* Routes normais. São constituidas por um url, uma variável opcional
     a passar como parametro, o controlador que vai fazer o processamento
     e a função que deve ser executado */
 Route::get('/getAvaliacoes/{nome}', 'AdminAvaliacoes@getAvaliacoes');
+Route::get('/getTrabalhos/{nome}', 'UploadController@getTrabalhos');
 Route::get('/getInscricoes/{id}', 'AdminCadeiras@getAlunos');
 Route::get('/getCadeirasAluno/{id}', 'AdminCadeiras@getAlunoCadeiras');
 Route::get('/getIDAluno/{nome}', 'AdminAvaliacoes@getIDAluno');
@@ -95,6 +102,9 @@ Route::group(['middleware' => ['App\Http\Middleware\AlunoMiddleware']], function
     });
 
     Route::get('/submeterTrabalho', function() {
-        return view('submeterTrabalho');
+        $cadeiras = DB::table('cadeiras')->get();
+        return view('submeterTrabalho', ['cadeiras' => $cadeiras]);
     });
+
+    Route::post('/submeterTrabalho','UploadController@uploadFilePost');
 });

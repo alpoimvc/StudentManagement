@@ -18,21 +18,59 @@
 
 <body>
 
-  <div class="container" style="width: 90%; clear:both; display: table; margin: 0 auto;">
-    <div class="col-md">
-
-      <h2>Trabalhos</h2>
-
-      <?php
-         echo Form::open(array('url' => '/uploadfile','files'=>'true'));
-         echo 'Select the file to upload.';
-         echo Form::file('image');
-         echo Form::submit('Upload File');
-         echo Form::close();
-      ?>
-
+  <div class="container">
+        <div class="row justify-content-center">
+            <div class="card">
+                <div class="card-header">Submeter Trabalho</div>
+ 
+                <div class="card-body">
+                    @if ($message = Session::get('success'))
+ 
+                        <div class="alert alert-success alert-block">
+ 
+                            <button type="button" class="close" data-dismiss="alert">×</button>
+ 
+                            <strong>{{ $message }}</strong>
+ 
+                        </div>
+ 
+                    @endif
+ 
+                    @if (count($errors) > 0)
+                        <div class="alert alert-danger">
+                            <strong>Whoops!</strong> There were some problems with your input.<br><br>
+                            <ul>
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+ 
+ 
+                        <form action="/submeterTrabalho" method="post" enctype="multipart/form-data">
+                            @csrf
+                            <div class="form-group">
+                                <select name="nomeCadeira" class="form-control">
+                                <option value="0">Escolher Cadeira</option>
+                                @foreach($cadeiras as $data)
+                                <option value="{{ $data->nome}}">
+                                {{ $data->nome }}
+                                </option>
+                                @endforeach
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <input type="file" class="form-control-file" name="fileToUpload" id="exampleInputFile" aria-describedby="fileHelp">
+                                <small id="fileHelp" class="form-text text-muted">Please upload a valid file. Size of image should not be more than 25MB.</small>
+                            </div>
+  
+                            <button type="submit" class="btn btn-primary">Submeter</button>
+                        </form>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
 
 </body>
 
