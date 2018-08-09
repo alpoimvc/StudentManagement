@@ -79,10 +79,10 @@
             <th>{{$data->id}}</th>
             <th>{{$data->nome}}</th>
             <th>
-              <button style="margin-right: 30px;" type="button" id="open" class="btn btn-info" data-toggle="modal" data-target="#modalEditar"
+              <button style="margin-right: 20px;" type="button" id="open" class="btn btn-info" data-toggle="modal" data-target="#modalEditar"
                 data-id="{{$data->id}}" data-nome="{{$data->nome}}">Editar</button>
-              <button id="deleteCadeira" type="button" class="btn btn-danger" data-id="{{$data->id}}">Apagar</button>
-              <button style="margin-right: 30px;" type="button" id="verAlunos" data-nome="{{$data->nome}}" data-id="{{$data->id}}" class="btn btn-info" data-toggle="modal" data-target="#modalAlunos">Alunos Inscritos</button>
+              <button style="margin-right: 20px;" id="deleteCadeira" type="button" class="btn btn-danger" data-id="{{$data->id}}">Apagar</button>
+              <button style="margin-right: 20px;" type="button" id="verAlunos" data-nome="{{$data->nome}}" data-id="{{$data->id}}" class="btn btn-info" data-toggle="modal" data-target="#modalAlunos">Alunos Inscritos</button>
             </th>
           </tr>
           @endforeach

@@ -62,7 +62,7 @@
                             </div>
                             <div class="form-group">
                                 <input type="file" class="form-control-file" name="fileToUpload" id="exampleInputFile" aria-describedby="fileHelp">
-                                <small id="fileHelp" class="form-text text-muted">Please upload a valid file. Size of image should not be more than 25MB.</small>
+                                <small id="fileHelp" class="form-text text-muted">O tamanho do ficheiro não deve ser maior do que 2MB.</small>
                             </div>
   
                             <button type="submit" class="btn btn-primary">Submeter</button>

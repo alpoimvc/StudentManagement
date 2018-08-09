@@ -101,7 +101,8 @@ $(document).ready(function () {
         {
           row += '<th>'+data.idAluno+'</th>';
           row += '<th>'+data.nomeAluno+'</th>';
-          row += '<th><a href="http://localhost:8000/storage/'+data.caminho+'".pdf target="_blank">'+data.caminho+'</a></th>';
+          /* Para cada trabalho faz-se um link para o respetivo caminho */
+          row += '<th><a href="http://localhost:8000/storage/'+data.caminho+'" target="_blank">'+data.caminho+'</a></th>';
           row += '</tr>';
         });
         if(!$('select[name="cadeira"]').val()){

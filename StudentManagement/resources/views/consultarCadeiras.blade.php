@@ -106,7 +106,7 @@
           "nome": $(this).data("nome"),
         },
         success: function(){
-          //location.reload(); //refreshes page
+          location.reload(); //refreshes page
         },
       });
       
