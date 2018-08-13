@@ -68,6 +68,7 @@ Route::get('/consultarTrabalhos', function() {
     /* Routes normais. São constituidas por um url, uma variável opcional
     a passar como parametro, o controlador que vai fazer o processamento
     e a função que deve ser executado */
+    Route::get('events', 'EventController@index');
 Route::get('/getAvaliacoes/{nome}', 'AdminAvaliacoes@getAvaliacoes');
 Route::get('/getTrabalhos/{nome}', 'UploadController@getTrabalhos');
 Route::get('/getInscricoes/{id}', 'AdminCadeiras@getAlunos');
@@ -81,6 +82,7 @@ Route::post('/inserirInscricao', 'AdminCadeiras@inscreverAluno');
 Route::post('/inserirAvaliacao', 'AdminAvaliacoes@inserir');
 Route::post('/inserirCadeira','AdminCadeiras@inserir');
 Route::get('/inserirAluno/{id}', 'AdminAvaliacoes@getAvaliacoes');
+Route::post('/guardarHorario','EventController@inserir');
 
 });
 
