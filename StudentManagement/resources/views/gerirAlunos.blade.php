@@ -76,6 +76,8 @@
                 <!-- Botão que abre o modal (popup) para ver as cadeiras -->
                 <button style="margin-right: 30px;" type="button" id="verCadeiras" class="btn btn-primary" data-toggle="modal" data-target="#modalCadeiras"
                 data-id="{{$data->id}}" data-name="{{$data->name}}">Ver cadeiras</button>
+                <button style="margin-right: 30px;" type="button" id="verHorarios" class="btn btn-primary" data-toggle="modal" data-target="#modalHorario"
+                data-id="{{$data->id}}">Atribuir horário</button>
             </th>
           </tr>
           @endif
@@ -133,6 +135,46 @@
       </div>
       </div>
 
+          <!-- Modal para inscrever em cadeiras -->
+    <div class="modal fade" id="modalHorario" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title" id="myModalLabel">Horários</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+              <!-- Form que irá submeter os dados (idAluno, nomeAluno e nomeCadeira)
+              para o url especificado. Ver nas routes para que controlador o pedido é redirecionado -->
+            <form action="{{ url('/guardarHorario') }}" method="POST" onsubmit="myFunction()">
+              <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
+              <input type="hidden" class="form-control" name="id" id="id">
+
+              <div class="form-group">
+                <label for="des">Horários:</label>
+                <!-- Select que lista as cadeiras -->
+                <select name="turno" id="turno" class="form-control">
+                <option value="">Escolher turno</option>
+                    @foreach($task as $data)
+                    <option value="{{ $data->turno }}">
+                      {{ $data->turno }}
+                    </option>
+                    @endforeach
+                </select>
+              </div>
+
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="submit" id="submitInscricao" class="btn btn-info" >Save changes</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      </div>
+
   </div>
 
   <script>
@@ -161,6 +203,13 @@
         });
         $("#tbody").html(row);
       });
+      });
+
+       $('#modalHorario').on('show.bs.modal', function (event) {
+      var button = $(event.relatedTarget);
+      var modal = $(this);
+      var idAluno = button.data('id');
+      $("#id").val(idAluno);
       });
 
     });

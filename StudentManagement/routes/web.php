@@ -47,7 +47,8 @@ Route::get('/gerirCadeiras', function() {
 Route::get('/gerirAlunos', function() {
     $alunos = DB::table('users')->get();
     $cadeiras = DB::table('cadeiras')->get();
-    return view('gerirAlunos', ['alunos' => $alunos, 'cadeiras' => $cadeiras]);
+    $task = DB::table('tasks')->distinct()->get();
+    return view('gerirAlunos', ['alunos' => $alunos, 'cadeiras' => $cadeiras, 'task' => $task]);
 });
 
     /* Neste tipo de routes é feita uma query que recebe um array
@@ -82,8 +83,8 @@ Route::post('/inserirInscricao', 'AdminCadeiras@inscreverAluno');
 Route::post('/inserirAvaliacao', 'AdminAvaliacoes@inserir');
 Route::post('/inserirCadeira','AdminCadeiras@inserir');
 Route::get('/inserirAluno/{id}', 'AdminAvaliacoes@getAvaliacoes');
-Route::get('gerirHorarios', 'EventController@index');
-Route::post('/guardarHorario','EventController@inserir');
+Route::post('/guardarHorario','AdminCadeiras@atribuirHorario');
+Route::resource('tasks', 'TasksController');
 
 });
 
@@ -108,6 +109,8 @@ Route::group(['middleware' => ['App\Http\Middleware\AlunoMiddleware']], function
         $cadeiras = DB::table('cadeiras')->get();
         return view('submeterTrabalho', ['cadeiras' => $cadeiras]);
     });
+
+    Route::get('/consultarHorario', 'TasksController@getHorarioAluno');
 
     Route::post('/submeterTrabalho','UploadController@uploadFilePost');
 });

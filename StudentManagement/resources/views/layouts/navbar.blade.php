@@ -23,7 +23,7 @@
                      <a class="nav-link" href="/gerirAvaliacoes"><span>Avaliações</span></a>
                      </li>
                      <li class="nav-item">
-                     <a class="nav-link" href="/gerirHorarios"><span>Horários</span></a>
+                     <a class="nav-link" href="/tasks"><span>Horários</span></a>
                      </li>
                      <li class="nav-item">
                      <a class="nav-link" href="/consultarTrabalhos"><span>Trabalhos</span></a>

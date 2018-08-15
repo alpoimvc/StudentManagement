@@ -69,6 +69,13 @@ class AdminCadeiras extends Controller
 
         DB::delete('delete from inscricoes where nomeCadeira = ? and idAluno = ?',[$nome, $id]);
     }
+
+    public function atribuirHorario(Request $request) {
+        $cadeira = DB::table('users')
+            ->where('id', $request->id)
+            ->update(['turno' => $request->turno]);
+        return redirect()->to('/gerirAlunos');
+    }
     
 
 }
