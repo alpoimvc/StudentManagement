@@ -78,6 +78,7 @@
                 data-id="{{$data->id}}" data-name="{{$data->name}}">Ver cadeiras</button>
                 <button style="margin-right: 30px;" type="button" id="verHorarios" class="btn btn-primary" data-toggle="modal" data-target="#modalHorario"
                 data-id="{{$data->id}}">Atribuir horário</button>
+                <button style="margin-right: 20px;" id="deleteAluno" type="button" class="btn btn-danger" data-id="{{$data->id}}">Apagar</button>
             </th>
           </tr>
           @endif
@@ -211,6 +212,23 @@
       var idAluno = button.data('id');
       $("#id").val(idAluno);
       });
+
+          /* Ao clicar no botão de delete é feito um pedido ajax que identifica
+    o id da cadeira a remover */
+    $(document).on('click', '#deleteAluno', function () {
+      $.ajax({
+        type: 'POST',
+        url: '/removerAluno/{id}',
+        data: {
+          "_token": "{{ csrf_token() }}",
+          "id": $(this).data("id"),
+        },
+        success: function(){
+          location.reload(); //refreshes page
+        },
+      });
+      
+    });
 
     });
 
