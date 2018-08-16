@@ -71,7 +71,8 @@ class TasksController extends Controller
      */
     public function edit($id)
     {
-        //
+        DB::delete('delete from tasks where id = ?',[$id]);
+        return redirect()->to('/tasks'); 
     }
 
     /**

@@ -40,8 +40,8 @@
     <option name="hour" value="15:00">15:00</option>
     <option name="hour" value="16:00">14:00</option>
     </select>
-  <br /><br />
-  Dia da aula (aulas únicas):
+  <br />
+  Dia da aula (apenas para aulas únicas):
   <br />
   <input type="datetime" value="" id="time-holder" name="task_date">
   <br />
@@ -62,12 +62,14 @@
   <br />
     <select class="form-control" name="turno" required>
     <option name="turno" value="">Escolher turno</option>
-    <option name="turno" value="A">A</option>
-    <option name="turno" value="B">B</option>
-    <option name="turno" value="C">C</option>
+    <option name="turno" value="A">A (verde)</option>
+    <option name="turno" value="B">B (azul)</option>
+    <option name="turno" value="C">C (laranja)</option>
     </select>
     <br />
   <input type="submit" value="Save" />
+  <br /><br />
+  <h6 style="color: #4CAF50;">Nota: Para remover uma aula clique em cima do evento</h6>
 </form>
 
 </div>
@@ -129,6 +131,9 @@
                 $(this).css('z-index', 8);
                 $('.tooltipevent').remove();
             },
+            eventClick: function(calEvent, jsEvent, view) {
+                alert("A aula será removida");
+            }
         })
     });
 </script>
