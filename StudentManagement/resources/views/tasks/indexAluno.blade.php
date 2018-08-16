@@ -11,13 +11,10 @@
 @section('content')
 <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.1.0/fullcalendar.min.css' />
 
-<div class="container" style="display:flex;">
-<div style="width: 900px;" id='calendar'></div>
 
-<div style="flex-grow: 1; margin-left: 15px;">
-<h4>Adicionar aula</h4>
+<div style="width: 100%; float:center;" id='calendar'></div>
 
-</div>
+
 </div>
 
 <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
@@ -31,16 +28,17 @@
             header: {
             left: 'prev,next today',
             center: 'title',
-            right: 'month,agendaWeek,agendaDay'
             },
-            defaultView: 'agendaWeek',
+            defaultView: 'month',
             events : [
                 @foreach($tasks as $task)
                 {
+                    id : '{{ $task->id }}',
                     title : '{{ $task->name }}',
                     start : '{{ $task->task_date }}',
                     url : '{{ route('tasks.edit', $task->id) }}',
                     dow: '{{ $task->dow }}',
+                    hour : '{{ $task->hour }}',
                     @if( $task->turno == 'A')
                     color  : '#33cc33'
                     @endif
@@ -53,7 +51,27 @@
                 },
                 @endforeach
             ],
-            eventColor: '#01DF01'
+            displayEventTime: false,
+            eventMouseover: function(calEvent, jsEvent) {
+                var tooltip = '<div class="tooltipevent" style="width:100px;height:100px;background:#ccc;position:absolute;z-index:10001;">' + calEvent.hour + '</div>';
+                $("body").append(tooltip);
+                $(this).mouseover(function(e) {
+                    $(this).css('z-index', 10000);
+                    $('.tooltipevent').fadeIn('500');
+                    $('.tooltipevent').fadeTo('10', 1.9);
+                }).mousemove(function(e) {
+                    $('.tooltipevent').css('top', e.pageY + 10);
+                    $('.tooltipevent').css('left', e.pageX + 20);
+                });
+            },
+
+            eventMouseout: function(calEvent, jsEvent) {
+                $(this).css('z-index', 8);
+                $('.tooltipevent').remove();
+            },
+            /*function( event, jsEvent, view ) { 
+                .fullCalendar( ‘removeEvents’ [event.id] )
+            }*/
         })
     });
 </script>

@@ -27,20 +27,27 @@
     @endforeach
     </select>
   <br />
-  Descrição:
+  Hora da aula:
   <br />
-  <textarea name="description"></textarea>
+  <select class="form-control" name="hour" required>
+    <option name="hour" value="">Escolher hora</option>
+    <option name="hour" value="09:00">09:00</option>
+    <option name="hour" value="10:00">10:00</option>
+    <option name="hour" value="11:00">11:00</option>
+    <option name="hour" value="12:00">12:00</option>
+    <option name="hour" value="13:00">13:00</option>
+    <option name="hour" value="14:00">14:00</option>
+    <option name="hour" value="15:00">15:00</option>
+    <option name="hour" value="16:00">14:00</option>
+    </select>
   <br /><br />
-  Inicio da aula:
+  Dia da aula (aulas únicas):
   <br />
-  <input type="datetime" value="" id="time-holder" name="task_date" required>
+  <input type="datetime" value="" id="time-holder" name="task_date">
   <br />
-  Fim da aula:
-  <br />
-  <input type="datetime" value="" id="time-holder2" name="task_date_end" required>
-  <input type="button" value="Obter hora atual" id="time">
+  <input type="button" value="Obter dia atual" id="time">
   <br /><br />
-  Dia:
+  Dias da semana:
   <br />
     <select class="form-control" name="dow" required>
     <option name="dow" value="">Escolher dia</option>
@@ -69,9 +76,8 @@
 <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
 <script>
     $('#time').click(function(){
-		var time = moment().format('YYYY-MM-DDThh:mm:ss');
-        $('#time-holder').val(time);  
-        $('#time-holder2').val(time);  
+		var time = moment().format('YYYY-MM-DD');
+        $('#time-holder').val(time);
     });
 
     $(document).ready(function() {
@@ -83,17 +89,16 @@
             header: {
             left: 'prev,next today',
             center: 'title',
-            right: 'month,agendaWeek,agendaDay'
             },
-            defaultView: 'agendaWeek',
+            defaultView: 'month',
             events : [
                 @foreach($tasks as $task)
                 {
                     title : '{{ $task->name }}',
                     start : '{{ $task->task_date }}',
-                    end : '{{ $task->task_date_end }}',
                     url : '{{ route('tasks.edit', $task->id) }}',
                     dow: '{{ $task->dow }}',
+                    hour : '{{ $task->hour }}',
                     @if( $task->turno == 'A')
                     color  : '#33cc33'
                     @endif
@@ -106,10 +111,23 @@
                 },
                 @endforeach
             ],
-            eventRender: function(event, element) {
-                if(event.turno == "A") {
-                    element.css('background-color', '#01DF01');
-                }
+            displayEventTime: false,
+            eventMouseover: function(calEvent, jsEvent) {
+                var tooltip = '<div class="tooltipevent" style="width:100px;height:100px;background:#ccc;position:absolute;z-index:10001;">' + calEvent.hour + '</div>';
+                $("body").append(tooltip);
+                $(this).mouseover(function(e) {
+                    $(this).css('z-index', 10000);
+                    $('.tooltipevent').fadeIn('500');
+                    $('.tooltipevent').fadeTo('10', 1.9);
+                }).mousemove(function(e) {
+                    $('.tooltipevent').css('top', e.pageY + 10);
+                    $('.tooltipevent').css('left', e.pageX + 20);
+                });
+            },
+
+            eventMouseout: function(calEvent, jsEvent) {
+                $(this).css('z-index', 8);
+                $('.tooltipevent').remove();
             },
         })
     });

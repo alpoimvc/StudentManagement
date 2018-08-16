@@ -75,6 +75,7 @@ Route::get('/getTrabalhos/{nome}', 'UploadController@getTrabalhos');
 Route::get('/getInscricoes/{id}', 'AdminCadeiras@getAlunos');
 Route::get('/getCadeirasAluno/{id}', 'AdminCadeiras@getAlunoCadeiras');
 Route::get('/getIDAluno/{nome}', 'AdminAvaliacoes@getIDAluno');
+Route::post('/removerAluno/{id}','AdminCadeiras@removerAluno');
 Route::post('/editarCadeira','AdminCadeiras@editarCadeira');
 Route::post('/removerCadeira/{id}','AdminCadeiras@removerCadeira');
 Route::post('/removerInscricao/{id}/{nome}','AdminCadeiras@removerInscricao');

@@ -62,6 +62,13 @@ class AdminCadeiras extends Controller
         return redirect()->to('/gerirCadeiras'); 
     }
 
+    public function removerAluno()
+    {
+        $id = Input::get('id');
+        DB::delete('delete from users where id = ?',[$id]);
+        return redirect()->to('/gerirAlunos'); 
+    }
+
     public function removerInscricao()
     {
         $id = Input::get('id');
