@@ -1,2 +1,2 @@
 # StudentManagement
-A student management system to view courses, grades etc...
+A student management system made with Laravel
